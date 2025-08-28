@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Dashboard · NWU Cafeteria</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+	<link rel="stylesheet" href="/css/styles.css">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+	<header class="app-header">
+		<div class="container header-inner">
+			<div class="brand">
+				<div class="logo">NWU</div>
+				<div class="branding-text">
+					<div class="title">Cafeteria Satisfaction Monitor</div>
+					<div class="subtitle">North-West University</div>
+				</div>
+			</div>
+			<nav class="nav">
+				<a href="/" class="nav-link">Feedback</a>
+				<a href="/dashboard" class="nav-link">Dashboard</a>
+			</nav>
+		</div>
+	</header>
+	<main class="container">
+		<section class="card">
+			<h1 class="card-title">Satisfaction Dashboard</h1>
+			<p class="muted">Track cafeteria ratings and trends. Use filters to refine.</p>
+			<div class="filters">
+				<div class="filter-item">
+					<label class="form-label">Cafeteria</label>
+					<select id="filter-cafeteria" class="input">
+						<option>All</option>
+						<th:block th:each="c : ${cafeterias}"><option th:text="${c}"></option></th:block>
+					</select>
+				</div>
+				<div class="filter-item">
+					<label class="form-label">From</label>
+					<input type="date" id="filter-start" class="input" />
+				</div>
+				<div class="filter-item">
+					<label class="form-label">To</label>
+					<input type="date" id="filter-end" class="input" />
+				</div>
+				<div class="filter-actions">
+					<button id="apply-filters" class="btn primary">Apply</button>
+					<a id="export-csv" class="btn" href="#">Export CSV</a>
+				</div>
+			</div>
+			<div class="kpis">
+				<div class="kpi">
+					<div class="kpi-label">Total feedback</div>
+					<div class="kpi-value" id="kpi-total">0</div>
+				</div>
+				<div class="kpi">
+					<div class="kpi-label">Average rating</div>
+					<div class="kpi-value" id="kpi-avg">—</div>
+				</div>
+			</div>
+			<div class="charts">
+				<div class="chart-card">
+					<h3 class="chart-title">Average rating over time</h3>
+					<canvas id="chart-line" height="100"></canvas>
+				</div>
+				<div class="chart-card">
+					<h3 class="chart-title">Rating distribution</h3>
+					<canvas id="chart-bar" height="100"></canvas>
+				</div>
+			</div>
+		</section>
+	</main>
+	<footer class="app-footer">
+		<div class="container">
+			<small>© 2025 NWU. Built for campus insights.</small>
+		</div>
+	</footer>
+	<script src="/js/dashboard.js"></script>
+</body>
+</html>
+
