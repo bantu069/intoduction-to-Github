@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>{% block title %}NWU Cafeteria Satisfaction{% endblock %}</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+	{% block head %}{% endblock %}
+</head>
+<body>
+	<header class="app-header">
+		<div class="container header-inner">
+			<div class="brand">
+				<div class="logo">NWU</div>
+				<div class="branding-text">
+					<div class="title">Cafeteria Satisfaction Monitor</div>
+					<div class="subtitle">North-West University</div>
+				</div>
+			</div>
+			<nav class="nav">
+				<a href="/" class="nav-link">Feedback</a>
+				<a href="/dashboard" class="nav-link">Dashboard</a>
+			</nav>
+		</div>
+	</header>
+	<main class="container">
+		{% block content %}{% endblock %}
+	</main>
+	<footer class="app-footer">
+		<div class="container">
+			<small>© {{ 2025 }} NWU. Built for campus insights.</small>
+		</div>
+	</footer>
+	{% block scripts %}{% endblock %}
+</body>
+</html>
+
