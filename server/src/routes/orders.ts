@@ -103,3 +103,22 @@ router.get('/', authRequired, (req: AuthenticatedRequest, res) => {
 });
 
 export default router;
+
+// Order items for a user's order
+router.get('/:orderId/items', authRequired, (req: AuthenticatedRequest, res) => {
+  const orderId = Number(req.params.orderId);
+  const db = getDb();
+  const order = db
+    .prepare('SELECT id, user_id AS userId FROM orders WHERE id = ?')
+    .get(orderId) as { id: number; userId: number } | undefined;
+  if (!order || order.userId !== req.user!.userId) return res.status(404).json({ error: 'Not found' });
+
+  const items = db
+    .prepare(
+      `SELECT oi.id, oi.item_id AS itemId, m.name AS itemName, oi.quantity, oi.price_cents AS priceCents
+       FROM order_items oi JOIN menu_items m ON m.id = oi.item_id
+       WHERE oi.order_id = ?`
+    )
+    .all(orderId);
+  return res.json(items);
+});

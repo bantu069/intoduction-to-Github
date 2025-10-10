@@ -3,6 +3,7 @@ import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { getDb } from '../db';
 import { signToken } from '../utils/jwt';
+import { authRequired, AuthenticatedRequest } from '../middleware/auth';
 
 const router = Router();
 
@@ -60,3 +61,15 @@ router.post('/login', (req, res) => {
 });
 
 export default router;
+
+// Current user profile
+router.get('/me', authRequired, (req: AuthenticatedRequest, res) => {
+  const db = getDb();
+  const user = db
+    .prepare(
+      'SELECT id, name, email, role, reward_points AS rewardPoints FROM users WHERE id = ?'
+    )
+    .get(req.user!.userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  return res.json(user);
+});
