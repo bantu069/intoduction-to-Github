@@ -84,3 +84,19 @@ router.get('/', auth_1.authRequired, (req, res) => {
     return res.json(orders);
 });
 exports.default = router;
+// Order items for a user's order
+router.get('/:orderId/items', auth_1.authRequired, (req, res) => {
+    const orderId = Number(req.params.orderId);
+    const db = (0, db_1.getDb)();
+    const order = db
+        .prepare('SELECT id, user_id AS userId FROM orders WHERE id = ?')
+        .get(orderId);
+    if (!order || order.userId !== req.user.userId)
+        return res.status(404).json({ error: 'Not found' });
+    const items = db
+        .prepare(`SELECT oi.id, oi.item_id AS itemId, m.name AS itemName, oi.quantity, oi.price_cents AS priceCents
+       FROM order_items oi JOIN menu_items m ON m.id = oi.item_id
+       WHERE oi.order_id = ?`)
+        .all(orderId);
+    return res.json(items);
+});
