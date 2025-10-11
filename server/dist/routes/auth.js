@@ -8,6 +8,7 @@ const zod_1 = require("zod");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const db_1 = require("../db");
 const jwt_1 = require("../utils/jwt");
+const auth_1 = require("../middleware/auth");
 const router = (0, express_1.Router)();
 const RegisterSchema = zod_1.z.object({
     name: zod_1.z.string().min(1),
@@ -55,3 +56,35 @@ router.post('/login', (req, res) => {
     return res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role, rewardPoints: user.rewardPoints } });
 });
 exports.default = router;
+// Current user profile
+router.get('/me', auth_1.authRequired, (req, res) => {
+    const db = (0, db_1.getDb)();
+    const user = db
+        .prepare('SELECT id, name, email, role, reward_points AS rewardPoints FROM users WHERE id = ?')
+        .get(req.user.userId);
+    if (!user)
+        return res.status(404).json({ error: 'User not found' });
+    return res.json(user);
+});
+// Customer profile: allergies and preferences
+const ProfileSchema = zod_1.z.object({
+    allergies: zod_1.z.string().default(''),
+    preferences: zod_1.z.string().default(''),
+});
+router.get('/profile', auth_1.authRequired, (req, res) => {
+    const db = (0, db_1.getDb)();
+    const row = db
+        .prepare('SELECT user_id AS userId, allergies, preferences FROM profiles WHERE user_id = ?')
+        .get(req.user.userId);
+    return res.json(row || { userId: req.user.userId, allergies: '', preferences: '' });
+});
+router.post('/profile', auth_1.authRequired, (req, res) => {
+    const parse = ProfileSchema.safeParse(req.body);
+    if (!parse.success)
+        return res.status(400).json({ error: parse.error.flatten() });
+    const { allergies, preferences } = parse.data;
+    const db = (0, db_1.getDb)();
+    db.prepare(`INSERT INTO profiles (user_id, allergies, preferences) VALUES (?, ?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET allergies = excluded.allergies, preferences = excluded.preferences`).run(req.user.userId, allergies, preferences);
+    return res.json({ ok: true });
+});

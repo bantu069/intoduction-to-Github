@@ -37,4 +37,49 @@ router.get('/reviews', (_req, res) => {
   return res.json(rows);
 });
 
+// Analytics: popular items (by quantity sold) and frequent customers (by paid orders)
+router.get('/analytics', (_req, res) => {
+  const db = getDb();
+  const popularItems = db.prepare(
+    `SELECT m.id, m.name, SUM(oi.quantity) AS totalQty
+     FROM order_items oi
+     JOIN menu_items m ON m.id = oi.item_id
+     GROUP BY m.id, m.name
+     ORDER BY totalQty DESC
+     LIMIT 10`
+  ).all();
+
+  const frequentCustomers = db.prepare(
+    `SELECT u.id, u.name, COUNT(o.id) AS ordersCount
+     FROM orders o JOIN users u ON u.id = o.user_id
+     WHERE o.status = 'PAID'
+     GROUP BY u.id, u.name
+     ORDER BY ordersCount DESC
+     LIMIT 10`
+  ).all();
+
+  return res.json({ popularItems, frequentCustomers });
+});
+
+// Sales reports: totals by day and payment method
+router.get('/sales', (_req, res) => {
+  const db = getDb();
+  const byDay = db.prepare(
+    `SELECT substr(created_at, 1, 10) AS day, SUM(amount_cents) AS totalCents
+     FROM payments
+     WHERE status = 'PAID'
+     GROUP BY day
+     ORDER BY day DESC`
+  ).all();
+
+  const byMethod = db.prepare(
+    `SELECT method, SUM(amount_cents) AS totalCents
+     FROM payments
+     WHERE status = 'PAID'
+     GROUP BY method`
+  ).all();
+
+  return res.json({ byDay, byMethod });
+});
+
 export default router;

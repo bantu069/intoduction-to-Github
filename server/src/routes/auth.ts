@@ -73,3 +73,29 @@ router.get('/me', authRequired, (req: AuthenticatedRequest, res) => {
   if (!user) return res.status(404).json({ error: 'User not found' });
   return res.json(user);
 });
+
+// Customer profile: allergies and preferences
+const ProfileSchema = z.object({
+  allergies: z.string().default(''),
+  preferences: z.string().default(''),
+});
+
+router.get('/profile', authRequired, (req: AuthenticatedRequest, res) => {
+  const db = getDb();
+  const row = db
+    .prepare('SELECT user_id AS userId, allergies, preferences FROM profiles WHERE user_id = ?')
+    .get(req.user!.userId);
+  return res.json(row || { userId: req.user!.userId, allergies: '', preferences: '' });
+});
+
+router.post('/profile', authRequired, (req: AuthenticatedRequest, res) => {
+  const parse = ProfileSchema.safeParse(req.body);
+  if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
+  const { allergies, preferences } = parse.data;
+  const db = getDb();
+  db.prepare(
+    `INSERT INTO profiles (user_id, allergies, preferences) VALUES (?, ?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET allergies = excluded.allergies, preferences = excluded.preferences`
+  ).run(req.user!.userId, allergies, preferences);
+  return res.json({ ok: true });
+});
