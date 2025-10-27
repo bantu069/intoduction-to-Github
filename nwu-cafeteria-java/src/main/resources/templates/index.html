@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Submit Feedback · NWU Cafeteria</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+	<link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+	<header class="app-header">
+		<div class="container header-inner">
+			<div class="brand">
+				<div class="logo">NWU</div>
+				<div class="branding-text">
+					<div class="title">Cafeteria Satisfaction Monitor</div>
+					<div class="subtitle">North-West University</div>
+				</div>
+			</div>
+			<nav class="nav">
+				<a th:href="@{/}" class="nav-link">Feedback</a>
+				<a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+			</nav>
+		</div>
+	</header>
+	<main class="container">
+		<section class="card">
+			<h1 class="card-title">Share your cafeteria experience</h1>
+			<p class="muted">Your feedback helps us improve food quality and service across campuses.</p>
+			<div th:if="${ok}" class="alert success">Thank you! Your feedback was submitted.</div>
+			<form method="post" th:action="@{/submit}" class="form">
+				<label class="form-label">Cafeteria</label>
+				<select name="cafeteria" class="input" required>
+					<option value="" disabled selected>Select a cafeteria</option>
+					<th:block th:each="c : ${cafeterias}">
+						<option th:value="${c}" th:text="${c}"></option>
+					</th:block>
+				</select>
+				<label class="form-label">Overall rating</label>
+				<div class="rating-group">
+					<th:block th:each="r : ${#numbers.sequence(1,5)}">
+						<label class="rating-option">
+							<input type="radio" name="rating" th:value="${r}" required>
+							<span th:text="${r}"></span>
+						</label>
+					</th:block>
+				</div>
+				<label class="form-label">Comments (optional)</label>
+				<textarea name="comments" class="input" rows="4" placeholder="What went well? What can we improve?"></textarea>
+				<div class="form-actions">
+					<button type="submit" class="btn primary">Submit feedback</button>
+					<a th:href="@{/dashboard}" class="btn">View dashboard</a>
+				</div>
+			</form>
+		</section>
+	</main>
+	<footer class="app-footer">
+		<div class="container">
+			<small>© 2025 NWU. Built for campus insights.</small>
+		</div>
+	</footer>
+</body>
+</html>
+

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Feedback · NWU Cafeteria{% endblock %}
+
+{% block content %}
+<section class="card">
+	<h1 class="card-title">Share your cafeteria experience</h1>
+	<p class="muted">Your feedback helps us improve food quality and service across campuses.</p>
+
+	{% if ok %}
+		<div class="alert success">Thank you! Your feedback was submitted.</div>
+	{% endif %}
+
+	<form method="post" action="{{ url_for('submit_feedback') }}" class="form">
+		<label class="form-label">Cafeteria</label>
+		<select name="cafeteria" class="input" required>
+			<option value="" disabled selected>Select a cafeteria</option>
+			{% for c in cafeterias %}
+				<option value="{{ c }}">{{ c }}</option>
+			{% endfor %}
+		</select>
+
+		<label class="form-label">Overall rating</label>
+		<div class="rating-group">
+			{% for r in range(1,6) %}
+				<label class="rating-option">
+					<input type="radio" name="rating" value="{{ r }}" required>
+					<span>{{ r }}</span>
+				</label>
+			{% endfor %}
+		</div>
+
+		<label class="form-label">Comments (optional)</label>
+		<textarea name="comments" class="input" rows="4" placeholder="What went well? What can we improve?"></textarea>
+
+		<div class="form-actions">
+			<button type="submit" class="btn primary">Submit feedback</button>
+			<a href="{{ url_for('dashboard') }}" class="btn">View dashboard</a>
+		</div>
+	</form>
+</section>
+{% endblock %}
+

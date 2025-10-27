@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard · NWU Cafeteria{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="card">
+	<h1 class="card-title">Satisfaction Dashboard</h1>
+	<p class="muted">Track cafeteria ratings and trends. Use filters to refine.</p>
+
+	<div class="filters">
+		<div class="filter-item">
+			<label class="form-label">Cafeteria</label>
+			<select id="filter-cafeteria" class="input">
+				{% for c in cafeterias %}
+					<option value="{{ c }}">{{ c }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="filter-item">
+			<label class="form-label">From</label>
+			<input type="date" id="filter-start" class="input" />
+		</div>
+		<div class="filter-item">
+			<label class="form-label">To</label>
+			<input type="date" id="filter-end" class="input" />
+		</div>
+		<div class="filter-actions">
+			<button id="apply-filters" class="btn primary">Apply</button>
+			<a id="export-csv" class="btn" href="#">Export CSV</a>
+		</div>
+	</div>
+
+	<div class="kpis">
+		<div class="kpi">
+			<div class="kpi-label">Total feedback</div>
+			<div class="kpi-value" id="kpi-total">0</div>
+		</div>
+		<div class="kpi">
+			<div class="kpi-label">Average rating</div>
+			<div class="kpi-value" id="kpi-avg">—</div>
+		</div>
+	</div>
+
+	<div class="charts">
+		<div class="chart-card">
+			<h3 class="chart-title">Average rating over time</h3>
+			<canvas id="chart-line" height="100"></canvas>
+		</div>
+		<div class="chart-card">
+			<h3 class="chart-title">Rating distribution</h3>
+			<canvas id="chart-bar" height="100"></canvas>
+		</div>
+	</div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
+

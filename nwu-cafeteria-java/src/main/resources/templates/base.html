@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title th:text="${title} ?: 'NWU Cafeteria Satisfaction'"></title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+	<link rel="stylesheet" th:href="@{/css/styles.css}">
+	<th:block th:replace="~{::head}"></th:block>
+</head>
+<body>
+	<header class="app-header">
+		<div class="container header-inner">
+			<div class="brand">
+				<div class="logo">NWU</div>
+				<div class="branding-text">
+					<div class="title">Cafeteria Satisfaction Monitor</div>
+					<div class="subtitle">North-West University</div>
+				</div>
+			</div>
+			<nav class="nav">
+				<a th:href="@{/}" class="nav-link">Feedback</a>
+				<a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+			</nav>
+		</div>
+	</header>
+	<main class="container">
+		<th:block th:replace="~{::content}"></th:block>
+	</main>
+	<footer class="app-footer">
+		<div class="container">
+			<small>© 2025 NWU. Built for campus insights.</small>
+		</div>
+	</footer>
+	<th:block th:replace="~{::scripts}"></th:block>
+</body>
+</html>
+
